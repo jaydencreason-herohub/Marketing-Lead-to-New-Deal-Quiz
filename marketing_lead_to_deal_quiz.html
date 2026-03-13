@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HubSpot: Marketing Lead → Normal Deal | Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #dff2f0;
+    --teal: #0d7377;
+    --teal-dark: #095e61;
+    --teal-light: #14a085;
+    --teal-pale: #c2e8e5;
+    --white: #ffffff;
+    --text: #1a2e2e;
+    --text-muted: #4a7070;
+    --border: #b8dbd8;
+    --correct: #1a9e3f;
+    --correct-bg: #d4f5de;
+    --incorrect: #c0392b;
+    --incorrect-bg: #fde8e6;
+    --reveal-bg: #e8f7f5;
+    --radius: 16px;
+    --card-radius: 20px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .badge {
+    display: inline-block;
+    background: var(--teal);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 7px 18px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-size: clamp(36px, 7vw, 58px);
+    font-weight: 900;
+    line-height: 1.05;
+    color: var(--teal);
+    margin-bottom: 16px;
+  }
+
+  h1 span {
+    color: var(--teal-light);
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.65;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  /* PROGRESS ROW */
+  .progress-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--teal);
+  }
+
+  .progress-bar-wrap {
+    background: var(--teal-pale);
+    border-radius: 100px;
+    height: 5px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--teal);
+    border-radius: 100px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+
+  /* QUESTION CARD */
+  .question-card {
+    background: var(--white);
+    border-radius: var(--card-radius);
+    padding: 32px 28px 28px;
+    box-shadow: 0 2px 16px rgba(13,115,119,0.08);
+    animation: fadeUp 0.35s ease forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal-light);
+    margin-bottom: 10px;
+  }
+
+  .q-text {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--text);
+    margin-bottom: 24px;
+  }
+
+  /* OPTIONS */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--white);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: border-color 0.18s, background 0.18s, transform 0.15s;
+    text-align: left;
+    width: 100%;
+  }
+
+  .option:hover:not(.locked) {
+    border-color: var(--teal);
+    background: var(--reveal-bg);
+    transform: translateX(3px);
+  }
+
+  .option.locked { cursor: default; }
+
+  .option-letter {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-muted);
+    transition: all 0.18s;
+  }
+
+  .option-text {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--text);
+  }
+
+  .option.selected-correct {
+    border-color: var(--correct);
+    background: var(--correct-bg);
+  }
+  .option.selected-correct .option-letter {
+    background: var(--correct);
+    border-color: var(--correct);
+    color: #fff;
+  }
+
+  .option.selected-incorrect {
+    border-color: var(--incorrect);
+    background: var(--incorrect-bg);
+  }
+  .option.selected-incorrect .option-letter {
+    background: var(--incorrect);
+    border-color: var(--incorrect);
+    color: #fff;
+  }
+
+  .option.reveal-correct {
+    border-color: var(--correct);
+    background: var(--correct-bg);
+  }
+  .option.reveal-correct .option-letter {
+    background: var(--correct);
+    border-color: var(--correct);
+    color: #fff;
+  }
+
+  /* FEEDBACK */
+  .feedback {
+    margin-top: 18px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.6;
+    display: none;
+  }
+
+  .feedback.correct {
+    display: block;
+    background: var(--correct-bg);
+    color: #145c28;
+    border-left: 4px solid var(--correct);
+  }
+
+  .feedback.incorrect {
+    display: block;
+    background: var(--incorrect-bg);
+    color: #922b21;
+    border-left: 4px solid var(--incorrect);
+  }
+
+  .feedback strong {
+    display: block;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    font-weight: 800;
+  }
+
+  /* NEXT BUTTON */
+  .next-btn {
+    display: none;
+    margin-top: 20px;
+    width: 100%;
+    background: var(--teal);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 15px 24px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.18s, transform 0.15s, box-shadow 0.18s;
+    letter-spacing: 0.02em;
+  }
+
+  .next-btn:hover {
+    background: var(--teal-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(13,115,119,0.25);
+  }
+
+  .next-btn.visible { display: block; }
+
+  /* SCORE SCREEN */
+  .score-screen { animation: fadeUp 0.4s ease forwards; }
+
+  .score-card {
+    background: var(--white);
+    border-radius: var(--card-radius);
+    padding: 40px 32px;
+    text-align: center;
+    box-shadow: 0 2px 16px rgba(13,115,119,0.08);
+    margin-bottom: 20px;
+  }
+
+  .score-ring {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 24px;
+  }
+
+  .score-ring svg { transform: rotate(-90deg); }
+
+  .score-ring-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .score-number {
+    font-size: 52px;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--teal);
+  }
+
+  .score-denom {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .score-grade {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--teal);
+    margin-bottom: 10px;
+  }
+
+  .score-msg {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    line-height: 1.65;
+    max-width: 400px;
+    margin: 0 auto 28px;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+
+  .stat-box {
+    flex: 1;
+    max-width: 120px;
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 16px 12px;
+  }
+
+  .stat-number {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--teal);
+  }
+
+  .stat-number.wrong { color: var(--incorrect); }
+
+  .stat-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+  }
+
+  /* BREAKDOWN */
+  .breakdown-card {
+    background: var(--white);
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(13,115,119,0.08);
+    margin-bottom: 20px;
+  }
+
+  .breakdown-header {
+    padding: 14px 24px;
+    background: var(--teal);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .breakdown-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--bg);
+    font-size: 13px;
+  }
+
+  .breakdown-item:last-child { border-bottom: none; }
+
+  .bd-icon {
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    margin-top: 1px;
+  }
+
+  .bd-icon.c { background: var(--correct-bg); color: var(--teal); }
+  .bd-icon.i { background: var(--incorrect-bg); color: var(--incorrect); }
+
+  .bd-q { font-weight: 700; color: var(--text); }
+  .bd-a { font-weight: 600; color: var(--text-muted); margin-top: 3px; }
+
+  .restart-btn {
+    width: 100%;
+    background: transparent;
+    border: 2px solid var(--teal);
+    color: var(--teal);
+    border-radius: var(--radius);
+    padding: 14px 24px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+
+  .restart-btn:hover {
+    background: var(--teal);
+    color: #fff;
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header" id="quizHeader">
+    <div class="badge">Herohub Training</div>
+    <h1>Marketing Lead<br><span>→ Normal Deal</span></h1>
+    <p class="subtitle">Test your knowledge of the Marketing Lead conversion process in HubSpot. 8 questions — let's see how ready you are.</p>
+  </div>
+
+  <div id="progressSection">
+    <div class="progress-row">
+      <span id="progressLabel">Question 1 of 8</span>
+      <span id="scoreLabel">Score: 0</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div id="quizArea"></div>
+  <div id="scoreScreen" class="hidden"></div>
+
+</div>
+
+<script>
+const questions = [
+  {
+    category: "Question 1",
+    text: "When you first open a contact record and see a deal in the right panel showing Pipeline: 'Marketing Lead' and Deal Stage: 'Form Submitted' — what does this tell you about the deal's current status?",
+    options: [
+      "The deal is ready to close immediately since the form has been submitted",
+      "The lead came in through a marketing form and hasn't yet been qualified or moved into the standard sales pipeline",
+      "The contact has already been contacted and the deal is in negotiation",
+      "The deal is stuck because no deal owner has been assigned"
+    ],
+    correct: 1,
+    feedback: "A deal sitting in the 'Marketing Lead' pipeline at 'Form Submitted' stage is an unqualified inbound lead — it hasn't been worked or converted to a normal deal yet. The absence of a deal owner and close date confirm it's fresh."
+  },
+  {
+    category: "Question 2",
+    text: "You're on the Contact record for a lead. You need to update the deal associated with them. What is the correct navigation path to get to the Deal record itself?",
+    options: [
+      "Click 'Actions' on the Contact record → 'Edit deal'",
+      "Go to the Deals section in the left sidebar navigation",
+      "Click the deal name shown in the Deals (1) panel on the right side of the Contact record",
+      "Search for the deal by company name using the HubSpot global search bar"
+    ],
+    correct: 2,
+    feedback: "The Deals panel on the right of the Contact record shows associated deals. Clicking the deal name directly navigates you to that Deal record — the fastest and most reliable path without risk of accidentally creating a duplicate."
+  },
+  {
+    category: "Question 3",
+    text: "The existing deal is named 'SalvatoreCerra- Marketing Lead'. You need to rename it to reflect the proper account. What is the naming convention used in the video, and why does it matter?",
+    options: [
+      "'Sal Cerra Deal' — keep it short and personal so the team recognizes it quickly",
+      "'Lakeway Powersports - DealerHero 20 Group' — company name plus product/group being sold",
+      "'Marketing Lead Converted - Lakeway Powersports' — flagging it as a converted lead",
+      "Leave the name as-is to preserve the audit trail of the lead's origin"
+    ],
+    correct: 1,
+    feedback: "The correct naming format is [Company Name] - [Product/Package], e.g. 'Lakeway Powersports - DealerHero 20 Group'. This makes it immediately clear what account and product the deal is for when scanning the pipeline — critical for team visibility."
+  },
+  {
+    category: "Question 4",
+    text: "After renaming the deal, you notice that Amount, Close Date, and Deal Owner are all blank. Which of these is MOST critical to fill in immediately, and why?",
+    options: [
+      "Amount — because pipeline revenue forecasting depends on it",
+      "Close Date — because HubSpot requires it before moving the deal stage",
+      "Deal Owner — because without one, no one is accountable and the deal may fall through the cracks",
+      "All three are equally critical and must be filled simultaneously before any other action"
+    ],
+    correct: 2,
+    feedback: "Deal Owner is the most operationally urgent field. Without it, there's no accountability — the deal is an orphan. HubSpot won't automatically assign tasks or notify anyone. Amount and Close Date matter for forecasting but don't affect whether the deal gets worked."
+  },
+  {
+    category: "Question 5",
+    text: "The deal is currently on the 'Marketing Lead' pipeline. When converting it to a normal deal, what must happen to the pipeline assignment?",
+    options: [
+      "Nothing — the pipeline auto-updates when you change the deal stage",
+      "The pipeline must be changed from 'Marketing Lead' to the standard sales pipeline, and the deal stage updated accordingly",
+      "Delete the Marketing Lead deal and create a brand new deal from scratch on the correct pipeline",
+      "Archive the Marketing Lead deal and associate a new deal to the contact"
+    ],
+    correct: 1,
+    feedback: "You update the Pipeline field on the deal record from 'Marketing Lead' to the appropriate standard pipeline. You do NOT delete and recreate — that would lose the activity history, call logs, notes, and meeting records tied to the deal."
+  },
+  {
+    category: "Question 6",
+    text: "On the Deal record, the activity feed shows a 'Call - Connected' entry, a 'Logged meeting - Completed' entry, and notes. If you were to delete the Marketing Lead deal and create a new one, what would be the consequence?",
+    options: [
+      "No consequence — all activities are tied to the Contact record, not the Deal",
+      "You would lose all deal-level activity history, including the call recording link and meeting outcome",
+      "HubSpot automatically migrates activities to the new deal if the contact is the same",
+      "Only the notes would be lost; calls and meetings are stored separately"
+    ],
+    correct: 1,
+    feedback: "Deal activities like logged meetings, call records, and the 'Review recording' link are associated with the Deal object. Deleting it destroys that history. The Contact record retains its own activity log, but deal-specific context is lost permanently."
+  },
+  {
+    category: "Question 7",
+    text: "The meeting notes reveal a non-standard billing arrangement: the contact will be invoiced for one month first, then pay the remaining annual balance in 2 weeks. How should this be handled in HubSpot?",
+    options: [
+      "Enter the full annual amount in the Amount field and add a note describing the split billing in the Notes tab",
+      "Create two separate deals — one for the first invoice and one for the remainder",
+      "Leave the Amount blank until the full payment clears",
+      "Set the Amount to the first invoice only and update it after the second payment"
+    ],
+    correct: 0,
+    feedback: "The correct approach is to log the full deal value in the Amount field (for accurate forecasting) and document the billing arrangement in a Note. Creating two deals would split the revenue reporting and complicate pipeline tracking."
+  },
+  {
+    category: "Question 8",
+    text: "After navigating from the Contact record to the Deal record, you notice the Companies section on the Deal shows '(0)'. What is the correct action?",
+    options: [
+      "This is normal — companies are associated at the Contact level, not the Deal level",
+      "Associate the company (Lakeway Powersports) to the Deal record manually using the '+ Add' button",
+      "Go back to the Contact record and re-link the deal from there to trigger an automatic company sync",
+      "Create a new Company record for Lakeway Powersports before associating it"
+    ],
+    correct: 1,
+    feedback: "In HubSpot, Deal-to-Company associations must sometimes be added manually. The '+ Add' button in the Companies panel on the Deal record lets you search for and associate the existing company. This is important for company-level reporting and deal attribution."
+  }
+];
+
+let currentQ = 0, score = 0, answered = [];
+const letters = ['A','B','C','D'];
+
+function renderQuestion(idx) {
+  const q = questions[idx];
+  document.getElementById('progressLabel').textContent = `Question ${idx + 1} of ${questions.length}`;
+  document.getElementById('scoreLabel').textContent = `Score: ${score}`;
+  document.getElementById('progressFill').style.width = ((idx / questions.length) * 100) + '%';
+
+  document.getElementById('quizArea').innerHTML = `
+    <div class="question-card">
+      <div class="q-label">${q.category}</div>
+      <p class="q-text">${q.text}</p>
+      <div class="options">
+        ${q.options.map((opt, i) => `
+          <button class="option" onclick="selectAnswer(${i})">
+            <span class="option-letter">${letters[i]}</span>
+            <span class="option-text">${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="nextBtn" onclick="nextQuestion()">
+        ${idx < questions.length - 1 ? 'Next Question →' : 'See My Results →'}
+      </button>
+    </div>
+  `;
+}
+
+function selectAnswer(idx) {
+  const q = questions[currentQ];
+  const options = document.querySelectorAll('.option');
+  options.forEach(o => o.classList.add('locked'));
+
+  const isCorrect = idx === q.correct;
+  if (isCorrect) score++;
+  answered.push({ correct: isCorrect, correctText: q.options[q.correct], category: q.category });
+
+  options[idx].classList.add(isCorrect ? 'selected-correct' : 'selected-incorrect');
+  if (!isCorrect) options[q.correct].classList.add('reveal-correct');
+
+  const feedback = document.getElementById('feedback');
+  feedback.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+  feedback.innerHTML = `<strong>${isCorrect ? '✓ Correct' : '✗ Incorrect'}</strong>${q.feedback}`;
+
+  document.getElementById('nextBtn').classList.add('visible');
+  document.getElementById('scoreLabel').textContent = `Score: ${score}`;
+}
+
+function nextQuestion() {
+  currentQ++;
+  currentQ < questions.length ? renderQuestion(currentQ) : showScore();
+}
+
+function showScore() {
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('quizArea').innerHTML = '';
+  document.getElementById('progressSection').style.display = 'none';
+  document.getElementById('quizHeader').style.display = 'none';
+
+  const pct = Math.round((score / questions.length) * 100);
+  const wrong = questions.length - score;
+  const circ = 2 * Math.PI * 58;
+  const offset = circ - (pct / 100) * circ;
+
+  let grade, msg;
+  if (pct >= 87) { grade = "Expert 🎉"; msg = "Outstanding. You have a thorough command of the Marketing Lead conversion process — including edge cases, pipeline hygiene, and deal data integrity."; }
+  else if (pct >= 62) { grade = "Proficient 👍"; msg = "Good foundation. You understand the core process but should revisit the edge cases around billing arrangements, company linking, and the consequences of deleting vs. editing deals."; }
+  else { grade = "Needs Review 📖"; msg = "This process has several nuances worth reviewing. Focus on deal pipeline migration, naming conventions, and preserving activity history when working existing deals."; }
+
+  const screen = document.getElementById('scoreScreen');
+  screen.classList.remove('hidden');
+  screen.innerHTML = `
+    <div class="score-screen">
+      <div class="score-card">
+        <div class="score-ring">
+          <svg width="160" height="160" viewBox="0 0 160 160">
+            <circle cx="80" cy="80" r="58" fill="none" stroke="#dff2f0" stroke-width="10"/>
+            <circle cx="80" cy="80" r="58" fill="none" stroke="#0d7377" stroke-width="10"
+              stroke-dasharray="${circ}" stroke-dashoffset="${offset}"
+              stroke-linecap="round" style="transition:stroke-dashoffset 1.2s ease 0.2s"/>
+          </svg>
+          <div class="score-ring-label">
+            <div class="score-number">${score}</div>
+            <div class="score-denom">of ${questions.length}</div>
+          </div>
+        </div>
+        <div class="score-grade">${grade}</div>
+        <p class="score-msg">${msg}</p>
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-number">${score}</div><div class="stat-label">Correct</div></div>
+          <div class="stat-box"><div class="stat-number wrong">${wrong}</div><div class="stat-label">Incorrect</div></div>
+          <div class="stat-box"><div class="stat-number">${pct}%</div><div class="stat-label">Score</div></div>
+        </div>
+      </div>
+      <div class="breakdown-card">
+        <div class="breakdown-header">Question Breakdown</div>
+        ${answered.map((a, i) => `
+          <div class="breakdown-item">
+            <div class="bd-icon ${a.correct ? 'c' : 'i'}">${a.correct ? '✓' : '✗'}</div>
+            <div>
+              <div class="bd-q">${a.category}</div>
+              ${!a.correct ? `<div class="bd-a">Correct answer: ${a.correctText}</div>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <button class="restart-btn" onclick="restartQuiz()">↺ Try Again</button>
+    </div>
+  `;
+}
+
+function restartQuiz() {
+  currentQ = 0; score = 0; answered = [];
+  document.getElementById('scoreScreen').classList.add('hidden');
+  document.getElementById('progressSection').style.display = 'block';
+  document.getElementById('quizHeader').style.display = 'block';
+  renderQuestion(0);
+}
+
+renderQuestion(0);
+</script>
+</body>
+</html>
